@@ -1,33 +1,31 @@
-import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
+import { InternalApiService } from '@app/internal-api/internal-api.service';
+import { Injectable } from '@nestjs/common';
 import {
   Command,
-  Context,
+  Ctx,
   Hears,
   On,
   SceneEnter,
   Wizard,
   WizardStep,
 } from 'nestjs-telegraf';
-import { Cache } from 'cache-manager';
 import { Markup, Scenes } from 'telegraf';
 import { TelegramTexts } from './telegram.texts';
-import { RavendbService } from 'src/ravendb/ravendb.service';
-import { User } from 'src/entitites/user.entity';
 
 @Injectable()
 @Wizard('setup')
 export class TelegramSetupWizard {
-  constructor(private readonly dbService: RavendbService) {}
+  constructor(private readonly internalApiService: InternalApiService) {}
 
   @SceneEnter()
-  async enter(@Context() ctx: Scenes.WizardContext) {
+  async enter(@Ctx() ctx) {
     await ctx.reply(TelegramTexts.SETUP.WELCOME, { parse_mode: 'Markdown' });
     await ctx.reply(TelegramTexts.SETUP.KEY.ASK, { parse_mode: 'Markdown' });
   }
 
   @WizardStep(1)
   @Hears(/.+/)
-  async step_1(@Context() ctx: Scenes.WizardContext) {
+  async step_1(@Ctx() ctx) {
     if (ctx.message.text === '1234') {
       await ctx.reply(TelegramTexts.SETUP.KEY.VALID);
       await ctx.reply(
@@ -47,7 +45,7 @@ export class TelegramSetupWizard {
   @WizardStep(2)
   @On('location')
   @Command('cords')
-  async location(@Context() ctx: Scenes.WizardContext) {
+  async location(@Ctx() ctx) {
     if (
       ctx.update.message.text &&
       (ctx.update.message.text as string).startsWith('cords')
@@ -68,13 +66,22 @@ export class TelegramSetupWizard {
         latitude,
         longitude,
       };
+
+      await ctx.reply(undefined, Markup.removeKeyboard());
     }
 
-    await this.dbService.storeDocument(
-      new User(ctx.message.chat.id, ctx.message.location, []),
-    );
+    const user = await this.internalApiService.createUser({
+      telegramChatId: ctx.message.chat.id.toString(),
+      latitude: ctx.message.location.latitude,
+      longitude: ctx.message.location.longitude,
+    });
 
-    await ctx.reply(TelegramTexts.SETUP.LOCATION.VALID);
+    if (user.city === null) {
+      await ctx.reply(TelegramTexts.SETUP.LOCATION.INVALID);
+    } else {
+      await ctx.reply(TelegramTexts.SETUP.LOCATION.VALID);
+    }
+
     ctx.scene.leave();
   }
 }

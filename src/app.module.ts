@@ -1,15 +1,20 @@
-import { CacheModule, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TelegrafModule } from 'nestjs-telegraf';
 import { session } from 'telegraf';
-import { TasksModule } from './tasks/tasks.module';
+import { internalApiConfig } from './configs/internal-api.config';
+import { rabbitmqConfig } from './configs/rabbitmq.config';
+import { telegramConfig } from './configs/telegram.config';
+import { HandlersModule } from './handlers/handlers.module';
 import { TelegramModule } from './telegram/telegram.module';
-import * as redisStore from 'cache-manager-redis-store';
-import type { ClientOpts } from 'redis';
-import { RavendbModule } from './ravendb/ravendb.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      cache: true,
+      isGlobal: true,
+      load: [internalApiConfig, rabbitmqConfig, telegramConfig],
+    }),
     TelegrafModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
@@ -19,9 +24,8 @@ import { RavendbModule } from './ravendb/ravendb.module';
       }),
       inject: [ConfigService],
     }),
-    RavendbModule,
     TelegramModule,
-    TasksModule,
+    HandlersModule,
   ],
 })
 export class AppModule {}

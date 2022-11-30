@@ -29,6 +29,10 @@ You can do this by:
 It's all, thanks! 😌
 If I find something in your location, I'll send you immediatelly! Promise 🥰
 `,
+      INVALID: `
+Sorry, your location isn't supported yet 😭
+I'll notify you, when it changed! 😇
+`,
       INVALID_LAT: `Sorry, your latitude isn't number 😕 - try again!`,
       INVALID_LNG: `Sorry, your longitude isn't number 😕 - try again!`,
     },

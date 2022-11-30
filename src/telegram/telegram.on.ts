@@ -1,5 +1,5 @@
-import { Command, Ctx, Hears, Help, On, Start, Update } from 'nestjs-telegraf';
-import { Context, Markup, Scenes } from 'telegraf';
+import { Command, Ctx, Start, Update } from 'nestjs-telegraf';
+import { Context, Scenes } from 'telegraf';
 import { TelegramTexts } from './telegram.texts';
 
 @Update()

@@ -1,9 +1,10 @@
+import { InternalApiModule } from '@app/internal-api/internal-api.module';
 import { Module } from '@nestjs/common';
-import { RavendbService } from 'src/ravendb/ravendb.service';
 import { TelegramOnUpdate } from './telegram.on';
 import { TelegramSetupWizard } from './telegram.wizard';
 
 @Module({
-  providers: [TelegramOnUpdate, TelegramSetupWizard, RavendbService],
+  imports: [InternalApiModule],
+  providers: [TelegramOnUpdate, TelegramSetupWizard],
 })
 export class TelegramModule {}

@@ -1,0 +1,10 @@
+.devcontainer/
+
+.env
+.eslintrc
+.gitignore
+.prettierrc
+jest.config.ts
+Makefile
+nest-cli.json
+README.md
