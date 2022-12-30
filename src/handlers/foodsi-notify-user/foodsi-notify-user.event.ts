@@ -1,4 +1,4 @@
-import { FoodsiNotifyEventPayload, Offer } from '@app/commons/types';
+import { FoodsiNotifyEventPayload, Offer } from '@app/common/types';
 import { InternalApiService } from '@app/internal-api/internal-api.service';
 import { Injectable, Logger } from '@nestjs/common';
 import { EventPattern, Payload } from '@nestjs/microservices';

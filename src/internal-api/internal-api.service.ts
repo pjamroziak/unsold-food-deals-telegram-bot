@@ -1,4 +1,5 @@
-import { Offer, User } from '@app/commons/types';
+import { City, Cordinates } from '@app/common/types';
+import { Offer, User } from '@app/common/types';
 import {
   InternalApiConfigKey,
   InternalApiConfig,
@@ -31,6 +32,12 @@ export class InternalApiService {
   async getOffer(id: number) {
     return await this.getData<Offer>(
       fetch(`${this.config.baseUrl}/api/v1/offers/${id}`),
+    );
+  }
+
+  async getCityByCordinates(cordinates: Cordinates) {
+    return await this.getData<City>(
+      this.post(`${this.config.baseUrl}/api/v1/cities/find`, cordinates),
     );
   }
 
